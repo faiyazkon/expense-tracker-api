@@ -1,43 +1,33 @@
-class Employee:
-    def __init__(self, name, pay):
-        self.name = name
-        self.pay = pay
+from abc import ABC, abstractmethod
 
-    def get_info(self):
-        return f"{self.name} earns {self.pay}"
+class PaymentMethod(ABC):
+    @abstractmethod
+    def pay(self, amount):
+        pass
 
-    def apply_raise(self):
-        self.pay = int(self.pay * 1.04)
+class Bkash(PaymentMethod):
+    def pay(self, amount):
+        return f"Paid {amount} via bKash"
 
+class Nagad(PaymentMethod):
+    def pay(self, amount):
+        return f"Paid {amount} via Nagad"
 
-class Manager(Employee):
-    def __init__(self, name, pay, team):
-        super().__init__(name, pay)  # Employee handles name and pay
-        self.team = team             # Manager's own extra thing
-
-    def add_to_team(self, person):
-        self.team.append(person)
-
-    def get_info(self):              # overrides Employee's version
-        base = super().get_info()    # reuse Employee's version as starting point
-        return f"{base} | manages {self.team}"
+class CreditCard(PaymentMethod):
+    def pay(self, amount):
+        return f"Paid {amount} via Credit Card"
 
 
-class Developer(Employee):
-    def __init__(self, name, pay, language):
-        super().__init__(name, pay)
-        self.language = language
-    # no get_info, no apply_raise — uses Employee's versions automatically
+def checkout(payment_method, amount):
+    print(payment_method.pay(amount))
 
 
-m1 = Manager("Talim", 70000, ["Sadi", "Rafi"])
-d1 = Developer("Nafi", 50000, "Python")
+# same function, 3 different behaviors
+checkout(Bkash(), 500)
+checkout(Nagad(), 500)
+checkout(CreditCard(), 500)
 
-print(m1.get_info())   # Manager's overridden version
-print(d1.get_info())   # Employee's version, used automatically
-
-m1.apply_raise()       # inherited from Employee
-print(m1.pay)
-
-m1.add_to_team("Nafi")
-print(m1.get_info())
+# or loop through a list
+methods = [Bkash(), Nagad(), CreditCard()]
+for m in methods:
+    print(m.pay(1000))
